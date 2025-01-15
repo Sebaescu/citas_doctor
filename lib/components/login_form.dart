@@ -67,7 +67,9 @@ class _LoginFormState extends State<LoginForm> {
           Button(
             width: double.infinity, 
             title: 'Iniciar Sesión', 
-            onPressed: () {}, 
+            onPressed: () {
+              Navigator.of(context).pushNamed('main');
+            }, 
             disable: false,
           )
         ],
