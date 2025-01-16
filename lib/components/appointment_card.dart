@@ -122,7 +122,7 @@ class ScheduleCard extends StatelessWidget {
             width: 5,
           ),
           Text(
-            'Lunes 15/01/2025',
+            'Lunes, 13/01/2025',
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(

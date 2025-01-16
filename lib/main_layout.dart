@@ -49,7 +49,7 @@ class _MainLayoutState extends State<MainLayout> {
 
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.solidCalendarCheck),
-            label: 'Appointments',
+            label: 'Citas',
           ),
         ],
       ),
