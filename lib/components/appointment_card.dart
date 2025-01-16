@@ -1,8 +1,6 @@
-import 'package:citas_doctor/main.dart';
+
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
-import 'package:rating_dialog/rating_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppointmentCard extends StatefulWidget {
   AppointmentCard({Key? key}): super(key: key);
