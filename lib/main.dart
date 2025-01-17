@@ -21,8 +21,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
+    return ChangeNotifierProvider<AuthModel>(
+      create:(context)=>AuthModel(),
+      child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Flutter Doctor App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -54,7 +56,7 @@ class MyApp extends StatelessWidget {
         'booking_page': (context) => BookingPage(),
         'success_booking': (context) => const AppointmentBooked(),
       },
-    );
+    ));
   }
 }
 

@@ -64,13 +64,24 @@ class _LoginFormState extends State<LoginForm> {
                           ))),
           ),
           Config.spaceSmall,
-          Button(
-            width: double.infinity, 
-            title: 'Iniciar Sesión', 
-            onPressed: () {
-              Navigator.of(context).pushNamed('main');
-            }, 
-            disable: false,
+          Consumer<AuthModel>(
+            builder: (context,auth,child){
+              return Button(
+                width: double.infinity, 
+                title: 'Iniciar Sesión', 
+                onPressed: ()async {
+                  final token=await DioProvider().getToken(_emailController.text,_passController.text);
+                  if(token){
+                    auth.loginSuccess();
+                    MyApp.navigatorKey.currentState!.pushNamed('main');
+                  }
+                  final user=await DioProvider().getUser();
+                  //print(token);
+                  Navigator.of(context).pushNamed('main');
+                }, 
+                disable: false,
+              );
+            },
           )
         ],
       ),
