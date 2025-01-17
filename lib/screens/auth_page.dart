@@ -14,6 +14,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  bool isSignIn
   bool isSignIn = true;
   @override
   Widget build(BuildContext context) {
@@ -105,7 +106,7 @@ class _AuthPageState extends State<AuthPage> {
                     });
                   },
                   child: Text(
-                    isSignIn ? 'Sign Up' : 'Sign In',
+                    isSignIn ? 'Iniciar Sesión' : 'Sesión Iniciada',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

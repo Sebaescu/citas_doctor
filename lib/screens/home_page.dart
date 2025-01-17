@@ -42,6 +42,26 @@ class _HomePageState extends State<HomePage> {
     },
   ];
 
+  Future<void> getData()async{
+    final SharedPreferences prefs=await SharedPreferences.getInstance();
+    final token = prefs.getString('token')??'';
+
+    if(token.isNotEmpty&&token!=''){
+      final response=await DioProvider().getUser(token);
+      if(response!=null){
+        setState((){
+          user=json.decode(response);
+        });
+      }
+    }
+  }
+
+  @override
+  void initState(){
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Config().init(context);
@@ -60,15 +80,15 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
-                      'Amanda',
-                      style: TextStyle(
+                      user['name'],
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       child: CircleAvatar(
                         radius: 30,
                         backgroundImage: AssetImage('assets/profile1.jpg'),

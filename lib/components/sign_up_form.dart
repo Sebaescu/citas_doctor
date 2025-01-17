@@ -1,5 +1,9 @@
 import 'package:citas_doctor/components/button.dart';
+import 'package:citas_doctor/main.dart';
+import 'package:citas_doctor/models/auth_model.dart';
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/config.dart';
 
@@ -77,16 +81,31 @@ class _SignUpFormState extends State<SignUpForm> {
                           ))),
           ),
           Config.spaceSmall,
-          Button(
-            width: double.infinity,
-            title: 'Sign Up',
-            onPressed: () {},
-            disable: false,
+          Consumer<AuthModel>(
+            builder:(context,auth,child){
+              return Button(
+                width: double.infinity,
+                title: 'Iniciar Sesión',
+                onPressed: ()async {
+                  final userRegistration=await DioProvider().registerUser(_nameController.text,_emailController,text,_passController.text);
+                  if(userRegistration){
+                    final token=await.DioProvider().getToken(_emailController.text,_passController.text);
+                    if(token){
+                    auth.loginSucess();
+                    MyApp.navigatorKey.currentState!.pushNamed('main');
+                    }
+                  }else{
+                    print('Registro no exitoso.')
+                  }
+                  //final token=await DioProvider().getToken(_emailController.text,_passController.text);
+                  
+                },
+                disable: false,
+              );
+            },
           )
         ],
       ),
     );
   }
 }
-
-//now, let's get all doctor details and display on Mobile screen
