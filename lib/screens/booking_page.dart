@@ -25,10 +25,22 @@ class _BookingPageState extends State<BookingPage> {
   bool _isWeekend = false;
   bool _dateSelected = false;
   bool _timeSelected = false;
+  String? token;
+
+  Future<void> getToken()async{
+    final SharedPrefeferences prefs=await SharedPrefeferences.getInstance();
+    token=prefs.getString('token')??'';
+  }
+
+  void initState(){
+    getToken();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     Config().init(context);
+    final doctor=ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
       appBar: CustomAppBar(
         appTitle: 'Calendario',
@@ -118,7 +130,7 @@ class _BookingPageState extends State<BookingPage> {
               child: Button(
                 width: double.infinity,
                 title: 'Agendar Cita',
-                onPressed: () {
+                onPressed: () async{
                   Navigator.of(context).pushNamed('success_booking');
                 },
                 disable: _timeSelected && _dateSelected ? false : true,

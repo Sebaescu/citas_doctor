@@ -67,7 +67,9 @@ class _HomePageState extends State<HomePage> {
     Config().init(context);
 
     return Scaffold(
-      body: Padding(
+      body: user.isEmpty?
+      const Center(child: CircularProgressIndicator(),)
+      : Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 15,
           vertical: 15,
@@ -160,9 +162,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Config.spaceSmall,
                 Column(
-                  children: List.generate(10, (index) {
+                  children: List.generate(user['doctor'].length, (index) {
                     return DoctorCard(
                       route: 'doc_details',
+                      doctor: user['doctor']['index'],
                     );
                   }),
                 ),
