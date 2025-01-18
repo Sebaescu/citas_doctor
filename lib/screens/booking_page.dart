@@ -131,6 +131,9 @@ class _BookingPageState extends State<BookingPage> {
                 width: double.infinity,
                 title: 'Agendar Cita',
                 onPressed: () async{
+                  final getDate=DateConverted().getDate(_currentDay);
+                  final getDay=DateConverted.getDay(_currentDay.weekday);
+                  final getTime=DateConverted.getTime(_currentIndex!);
                   Navigator.of(context).pushNamed('success_booking');
                 },
                 disable: _timeSelected && _dateSelected ? false : true,

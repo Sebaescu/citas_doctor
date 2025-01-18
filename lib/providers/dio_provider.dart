@@ -44,4 +44,9 @@ class DioProvider {
       return error;
     }
   }
+
+  Future<dynamic> bookAppoinment(String date, String day, String time
+  )async{
+
+  }
 }
