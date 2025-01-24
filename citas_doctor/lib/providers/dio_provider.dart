@@ -21,9 +21,9 @@ class DioProvider {
 
   Future<dynamic> getUser(String token) async {
     try {
-      var user = await Dio().get('http://127.0.0.1:8000/api/user',
+      var user = await Dio().get('http://127.0.0.1:8000/api/login',
           options: Options(headers: {'Authorization': 'Bearer $token'}));
-      if (user.statusCode == 200 && user.dara != '') {
+      if (user.statusCode == 200 && user.data != '') {
         return json.encode(user.data);
       }
     } catch (error) {
@@ -33,9 +33,9 @@ class DioProvider {
 
   Future<dynamic> registerUser(String username,String email,String password) async {
     try {
-      var user = await Dio().post('http://127.0.0.1:8000/api/user',
+      var user = await Dio().post('http://127.0.0.1:8000/api/register',
           data: {'name':username,'email': email, 'password': password});
-      if (user.statusCode == 201 && user.dara != '') {
+      if (user.statusCode == 201 && user.data != '') {
         return true;
       }else{
         return false;
@@ -45,8 +45,19 @@ class DioProvider {
     }
   }
 
-  Future<dynamic> bookAppoinment(String date, String day, String time
-  )async{
+  Future<dynamic> bookAppoinment(String date, String day, String time, int doctor, String token)async{
+    try {
+      var response = await Dio().post('http://127.0.0.1:8000/api/book',
+          data: {'date': date, 'day': day, 'time': time, 'doctor_id': doctor},
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
 
+      if (response.statusCode == 200 && response.data != '') {
+        return response.statusCode;
+      } else {
+        return 'Error';
+      }
+    } catch (error) {
+      return error;
+    }
   }
 }

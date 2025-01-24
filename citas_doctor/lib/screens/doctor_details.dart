@@ -63,7 +63,7 @@ class _DoctorDetailsState extends State<DoctorDetails> {
 }
 
 class AboutDoctor extends StatelessWidget {
-  const AboutDoctor({Key? key}) : super(key: key);
+  const AboutDoctor({Key? key, required this.doctor}) : super(key: key);
 
   final Map<dynamic,dynamic> doctor;
 
@@ -145,7 +145,7 @@ class DetailBody extends StatelessWidget {
           ),
           Config.spaceSmall,
           Text(
-            'Dr. ${doctor['doctor_name']} is an experience Cardiología Specialist at Sarawak, graduated since 2008, and completed his/her training at Sungai Buloh General Hospital.',
+            'Dr. ${doctor['doctor_name']} is an experience "${doctor['category']}" Specialist at Sarawak, graduated since 2008, and completed his/her training at Sungai Buloh General Hospital.',
             style: const TextStyle(
               fontWeight: FontWeight.w500,
               height: 1.5,
@@ -171,14 +171,14 @@ class DoctorInfo extends StatelessWidget {
     return Row(
       children: <Widget>[
         InfoCard(
-          label: 'Patients',
+          label: 'Pacientes',
           value: '$patients',
         ),
         const SizedBox(
           width: 15,
         ),
         InfoCard(
-          label: 'Experiences',
+          label: 'Experiencia',
           value: '$exp years',
         ),
         const SizedBox(

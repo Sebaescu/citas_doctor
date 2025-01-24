@@ -35,15 +35,15 @@ class DoctorCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text(
-                        'Dr ${doctor['doctor_name']}',
-                        style: TextStyle(
+                      Text(
+                        "Dr ${doctor['doctor_name']}",
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Text(
-                        '${doctor['category']}',,
+                      Text(
+                        "${doctor['category']}",
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,

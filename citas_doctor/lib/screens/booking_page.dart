@@ -1,11 +1,14 @@
 import 'package:citas_doctor/components/button.dart';
 import 'package:citas_doctor/components/custom_appbar.dart';
 import 'package:citas_doctor/main.dart';
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import '../models/booking_datetime_converted.dart';
 
 
 
@@ -28,10 +31,11 @@ class _BookingPageState extends State<BookingPage> {
   String? token;
 
   Future<void> getToken()async{
-    final SharedPrefeferences prefs=await SharedPrefeferences.getInstance();
+    final SharedPreferences prefs=await SharedPreferences.getInstance();
     token=prefs.getString('token')??'';
   }
 
+  @override
   void initState(){
     getToken();
     super.initState();
@@ -131,10 +135,19 @@ class _BookingPageState extends State<BookingPage> {
                 width: double.infinity,
                 title: 'Agendar Cita',
                 onPressed: () async{
-                  final getDate=DateConverted().getDate(_currentDay);
+                  final getDate=DateConverted.getDate(_currentDay);
                   final getDay=DateConverted.getDay(_currentDay.weekday);
                   final getTime=DateConverted.getTime(_currentIndex!);
-                  Navigator.of(context).pushNamed('success_booking');
+
+                  final booking = await DioProvider().bookAppoinment(
+                      getDate, getDay, getTime, doctor['doctor_id'], token!);
+
+
+                  if (booking == 200) {
+                    MyApp.navigatorKey.currentState!
+                        .pushNamed('success_booked');
+                  }
+
                 },
                 disable: _timeSelected && _dateSelected ? false : true,
               ),

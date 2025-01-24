@@ -32,8 +32,8 @@ class _SignUpFormState extends State<SignUpForm> {
             keyboardType: TextInputType.text,
             cursorColor: Config.primaryColor,
             decoration: const InputDecoration(
-              hintText: 'Username',
-              labelText: 'Username',
+              hintText: 'Nombre de Usuario',
+              labelText: 'Nombre de Usuario',
               alignLabelWithHint: true,
               prefixIcon: Icon(Icons.person_outlined),
               prefixIconColor: Config.primaryColor,
@@ -45,8 +45,8 @@ class _SignUpFormState extends State<SignUpForm> {
             keyboardType: TextInputType.emailAddress,
             cursorColor: Config.primaryColor,
             decoration: const InputDecoration(
-              hintText: 'Email Address',
-              labelText: 'Email',
+              hintText: 'Correo Electrónico',
+              labelText: 'Correo',
               alignLabelWithHint: true,
               prefixIcon: Icon(Icons.email_outlined),
               prefixIconColor: Config.primaryColor,
@@ -59,8 +59,8 @@ class _SignUpFormState extends State<SignUpForm> {
             cursorColor: Config.primaryColor,
             obscureText: obsecurePass,
             decoration: InputDecoration(
-                hintText: 'Password',
-                labelText: 'Password',
+                hintText: 'Contraseña',
+                labelText: 'Contraseña',
                 alignLabelWithHint: true,
                 prefixIcon: const Icon(Icons.lock_outline),
                 prefixIconColor: Config.primaryColor,
@@ -85,20 +85,25 @@ class _SignUpFormState extends State<SignUpForm> {
             builder:(context,auth,child){
               return Button(
                 width: double.infinity,
-                title: 'Iniciar Sesión',
-                onPressed: ()async {
-                  final userRegistration=await DioProvider().registerUser(_nameController.text,_emailController,text,_passController.text);
-                  if(userRegistration){
-                    final token=await.DioProvider().getToken(_emailController.text,_passController.text);
-                    if(token){
-                    auth.loginSucess();
-                    MyApp.navigatorKey.currentState!.pushNamed('main');
+                title: 'Registro',
+                onPressed: () async {
+                  final userRegistration = await DioProvider().registerUser(
+                      _nameController.text,
+                      _emailController.text,
+                      _passController.text);
+
+                  if (userRegistration) {
+                    final token = await DioProvider()
+                        .getToken(_emailController.text, _passController.text);
+
+                    if (token) {
+                      auth.loginSuccess();
+                      
+                      MyApp.navigatorKey.currentState!.pushNamed('main');
                     }
-                  }else{
-                    print('Registro no exitoso.')
+                  } else {
+                    print('Registro fallido');
                   }
-                  //final token=await DioProvider().getToken(_emailController.text,_passController.text);
-                  
                 },
                 disable: false,
               );

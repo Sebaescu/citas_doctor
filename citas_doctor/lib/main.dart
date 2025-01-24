@@ -6,6 +6,8 @@ import 'package:citas_doctor/utils/config.dart';
 import 'package:citas_doctor/screens/auth_page.dart';
 import 'package:citas_doctor/main_layout.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:citas_doctor/models/auth_model.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -18,7 +20,6 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   static final navigatorKey = GlobalKey<NavigatorState>();
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<AuthModel>(

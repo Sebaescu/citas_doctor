@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Reviews extends Model
+class Doctor extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'user_id',
         'doc_id',
-        'ratings',
-        'reviews',
-        'reviewed_by',
+        'category',
+        'patients',
+        'experience',
+        'bio_data',
         'status',
     ];
 
