@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Doctor;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Appointments;
 use App\Models\UserDetails;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -22,20 +23,24 @@ class UsersController extends Controller
         $user = Auth::user();
         $doctor = User::where('type', 'doctor')->get();
         $doctorData = Doctor::all();
+        $date = now()->format('n/j/Y');
+        $appointment = Appointments::where('status', 'proximo')->where('date', $date)->first();
 
         foreach($doctorData as $data){
             foreach($doctor as $info){
                 if($data['doc_id'] == $info['id']){
                     $data['doctor_name'] = $info['name'];
                     $data['doctor_profile'] = $info['profile_photo_url'];
-
+                    if(isset($appointment) && $appointment['doc_id'] == $info['id']){
+                        $data['appointments'] = $appointment;
+                    }
                 }
             }
         }
 
         $user['doctor'] = $doctorData;
 
-        return $user; 
+        return $user;
     }
 
     /**
