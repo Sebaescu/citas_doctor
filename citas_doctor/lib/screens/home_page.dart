@@ -4,7 +4,9 @@ import 'package:citas_doctor/components/doctor_card.dart';
 import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Map<String, dynamic> user = {};
   Map<String, dynamic> doctor = {};
+  Map<String, dynamic> todayAppointment = {};
   List<dynamic> favList = [];
   List<Map<String, dynamic>> medCat = [
     {
@@ -54,10 +57,23 @@ class _HomePageState extends State<HomePage> {
       if(response!=null){
         setState((){
           user=json.decode(response);
-          for(var doctorData in user['doctor']){
-            if(doctorData['appointments'] != null){
-              doctor=doctorData;
-            }
+          for (var doctorData in user['doctor']) {
+              if (doctorData['appointments'] != null) {
+                doctor = doctorData;
+
+                final today = DateTime.now();
+                final formatter = DateFormat('M/d/yyyy');
+                final todayFormatted = formatter.format(today);
+
+                if (doctorData['appointments'] is Map<String, dynamic>) {
+                  var appointment = doctorData['appointments'];
+
+                  if (appointment['date'] == todayFormatted) {
+                    todayAppointment = appointment;
+                    break;
+                  }
+                }
+              }
           }
         });
       }
@@ -159,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Config.spaceSmall,
-                doctor.isNotEmpty
+                todayAppointment.isNotEmpty
                   ? AppointmentCard(
                       doctor: doctor,
                       color: Config.primaryColor,
