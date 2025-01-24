@@ -50,6 +50,8 @@ class DateConverted{
       return '16:00 PM';
       case 10:
       return '17:00 PM';
+      case 11:
+      return '18:00 PM';
       default:
       return '7:00 AM';
     }

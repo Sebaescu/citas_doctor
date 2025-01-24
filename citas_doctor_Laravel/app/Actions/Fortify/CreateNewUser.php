@@ -31,7 +31,7 @@ class CreateNewUser implements CreatesNewUsers
         $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
-            'type' => $input['doctor'],
+            'type' => 'doctor',
             'password' => Hash::make($input['password']),
         ]);
 

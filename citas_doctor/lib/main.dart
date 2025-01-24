@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:citas_doctor/screens/auth_page.dart';
 import 'package:citas_doctor/main_layout.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:citas_doctor/models/auth_model.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -55,7 +54,7 @@ class MyApp extends StatelessWidget {
         'main': (context) => const MainLayout(),
         'doc_details': (context) => const DoctorDetails(),
         'booking_page': (context) => BookingPage(),
-        'success_booking': (context) => const AppointmentBooked(),
+        'success_booked': (context) => const AppointmentBooked(),
       },
     ));
   }

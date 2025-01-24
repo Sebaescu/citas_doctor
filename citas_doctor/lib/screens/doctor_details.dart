@@ -137,7 +137,10 @@ class DetailBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Config.spaceSmall,
-          DoctorInfo(patients: doctor['patients'],exp:doctor['experience'],),
+          DoctorInfo(
+            patients: doctor['patients'],
+            exp:doctor['experience'],
+            ),
           Config.spaceMedium,
           const Text(
             'Sobre el Doctor',

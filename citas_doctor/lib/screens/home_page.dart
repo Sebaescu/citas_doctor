@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                   children: List.generate(user['doctor'].length, (index) {
                     return DoctorCard(
                       route: 'doc_details',
-                      doctor: user['doctor']['index'],
+                      doctor: user['doctor'][index],
                     );
                   }),
                 ),

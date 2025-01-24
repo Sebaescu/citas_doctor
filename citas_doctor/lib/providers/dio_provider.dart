@@ -21,7 +21,7 @@ class DioProvider {
 
   Future<dynamic> getUser(String token) async {
     try {
-      var user = await Dio().get('http://127.0.0.1:8000/api/login',
+      var user = await Dio().get('http://127.0.0.1:8000/api/user',
           options: Options(headers: {'Authorization': 'Bearer $token'}));
       if (user.statusCode == 200 && user.data != '') {
         return json.encode(user.data);

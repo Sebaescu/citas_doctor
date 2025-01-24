@@ -79,9 +79,6 @@ class _LoginFormState extends State<LoginForm> {
                     auth.loginSuccess();
                     MyApp.navigatorKey.currentState!.pushNamed('main');
                   }
-                  final user=await DioProvider().getUser(token);
-                  //print(token);
-                  Navigator.of(context).pushNamed('main');
                 }, 
                 disable: false,
               );

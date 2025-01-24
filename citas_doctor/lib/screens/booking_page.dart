@@ -5,6 +5,7 @@ import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -113,7 +114,7 @@ class _BookingPageState extends State<BookingPage> {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            '${index + 9}:00 ${index + 9 > 11 ? "PM" : "AM"}',
+                            '${index + 7}:00 ${index + 7 >= 12 ? (index + 7 == 12 ? "PM" : "PM") : "AM"}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color:
@@ -123,7 +124,7 @@ class _BookingPageState extends State<BookingPage> {
                         ),
                       );
                     },
-                    childCount: 8,
+                    childCount: 12,
                   ),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4, childAspectRatio: 1.5),
@@ -166,10 +167,17 @@ class _BookingPageState extends State<BookingPage> {
       lastDay: DateTime(2025, 12, 31),
       calendarFormat: _format,
       currentDay: _currentDay,
-      rowHeight: 48,
+      rowHeight: 60,
       calendarStyle: const CalendarStyle(
         todayDecoration:
             BoxDecoration(color: Config.primaryColor, shape: BoxShape.circle),
+      ),
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        weekendStyle:
+            TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+        dowTextFormatter: (date, locale) =>
+            DateFormat.E(locale).format(date).substring(0, 3).toUpperCase(),
       ),
       availableCalendarFormats: const {
         CalendarFormat.month: 'Mes',
@@ -179,13 +187,12 @@ class _BookingPageState extends State<BookingPage> {
           _format = format;
         });
       },
-      onDaySelected: ((selectedDay, focusedDay) {
+      onDaySelected: (selectedDay, focusedDay) {
         setState(() {
           _currentDay = selectedDay;
           _focusDay = focusedDay;
           _dateSelected = true;
 
-          
           if (selectedDay.weekday == 6 || selectedDay.weekday == 7) {
             _isWeekend = true;
             _timeSelected = false;
@@ -194,7 +201,8 @@ class _BookingPageState extends State<BookingPage> {
             _isWeekend = false;
           }
         });
-      }),
+      },
     );
   }
+
 }
