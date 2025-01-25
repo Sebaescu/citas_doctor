@@ -1,6 +1,10 @@
 
+import 'package:citas_doctor/main.dart';
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
+import 'package:rating_dialog/rating_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppointmentCard extends StatefulWidget {
   AppointmentCard({Key? key, required this.doctor, required this.color}): super(key: key);
@@ -83,11 +87,59 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                       ),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return RatingDialog(
+                              initialRating: 1.0,
+                              title: const Text(
+                                'Puntua a nuestro Doctor',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              message: const Text(
+                                '¿Cómo calificarías la atención de nuestro doctor?',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              image: const FlutterLogo(
+                                size: 100,
+                              ),
+                              submitButtonText: 'Enviar',
+                              commentHint: 'Tu comentario aquí...',
+                              onSubmitted: (response) async {
+                                final SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                final token =
+                                    prefs.getString('token') ?? '';
+
+                                final rating = await DioProvider()
+                                    .storeReviews(
+                                        response.comment,
+                                        response.rating,
+                                        widget.doctor['appointments']
+                                            ['id'], 
+                                        widget.doctor[
+                                            'doc_id'], 
+                                        token);
+
+                                if (rating == 200 && rating != '') {
+                                  MyApp.navigatorKey.currentState!
+                                      .pushNamed('main');
+                                }
+                              });
+                        });
+                      },
                       child: const Text(
                         'Completar',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () {},
                     ),
                   ),
                 ],
@@ -100,7 +152,6 @@ class _AppointmentCardState extends State<AppointmentCard> {
   }
 }
 
-//Schedule Widget
 class ScheduleCard extends StatelessWidget {
   const ScheduleCard({Key? key, required this.appointment}) : super(key: key);
   final Map<String, dynamic> appointment;
