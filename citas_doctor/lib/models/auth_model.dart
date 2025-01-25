@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:flutter/material.dart';
 
 class AuthModel extends ChangeNotifier{

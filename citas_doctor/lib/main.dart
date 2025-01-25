@@ -1,5 +1,5 @@
 import 'package:citas_doctor/screens/booking_page.dart';
-import 'package:citas_doctor/screens/doctor_details.dart';
+import 'package:citas_doctor/screens/cancel_booked.dart';
 import 'package:citas_doctor/screens/success_booked.dart';
 import 'package:flutter/material.dart';
 import 'package:citas_doctor/utils/config.dart';
@@ -54,6 +54,7 @@ class MyApp extends StatelessWidget {
         'main': (context) => const MainLayout(),
         'booking_page': (context) => BookingPage(),
         'success_booked': (context) => const AppointmentBooked(),
+        'cancel_booked': (context) => const AppointmentCancel(),
       },
     ));
   }

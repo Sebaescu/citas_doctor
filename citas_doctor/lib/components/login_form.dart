@@ -94,7 +94,6 @@ class _LoginFormState extends State<LoginForm> {
 
                           Map<String, dynamic> appointment = {};
                           final user = json.decode(response);
-
                           for (var doctorData in user['doctor']) {
 
                             if (doctorData['appointments'] != null) {

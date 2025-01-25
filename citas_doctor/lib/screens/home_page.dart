@@ -1,15 +1,10 @@
-import 'dart:convert';
 import 'package:citas_doctor/components/appointment_card.dart';
 import 'package:citas_doctor/components/doctor_card.dart';
 import 'package:citas_doctor/models/auth_model.dart';
-import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,6 +12,7 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 
 class _HomePageState extends State<HomePage> {
   Map<String, dynamic> user = {};
@@ -48,7 +44,6 @@ class _HomePageState extends State<HomePage> {
       "category": "Odontología",
     },
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(
                       child: CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage('assets/profile1.jpg'),
+                        backgroundImage: AssetImage('assets/lucin.png'),
                       ),
                     )
                   ],
@@ -134,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Config.spaceSmall,
                 const Text(
-                  'Citas del día',
+                  'Próxima Cita',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -156,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: EdgeInsets.all(20),
                           child: Text(
-                            'No tiene Citas para Hoy',
+                            'No tiene Citas',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

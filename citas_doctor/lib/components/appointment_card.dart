@@ -16,7 +16,21 @@ class AppointmentCard extends StatefulWidget {
   State<AppointmentCard> createState() => _AppointmentCardState();
 }
 
+
 class _AppointmentCardState extends State<AppointmentCard> {
+  String? token;
+
+  Future<void> getToken()async{
+    final SharedPreferences prefs=await SharedPreferences.getInstance();
+    token=prefs.getString('token')??'';
+  }
+
+  @override
+  void initState(){
+    getToken();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,7 +90,89 @@ class _AppointmentCardState extends State<AppointmentCard> {
                         'Cancelar',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              content: const FlutterLogo(
+                                size: 100,
+                              ),
+                              title: const Text(
+                                'Seguro que quieres cancelar la cita?',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              actions: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .center, 
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal:
+                                              10), 
+                                      child: TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); 
+                                        },
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors
+                                          .red, 
+                                        ),
+                                        child: const Text(
+                                          'No',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal:
+                                              10), 
+                                      child: TextButton(
+                                        onPressed: () async {
+
+                                          final cancel = await DioProvider()
+                                              .cancelAppointment(
+                                                  widget.doctor['appointments']
+                                                      ['id'],
+                                                  token!);
+
+                                          if (cancel == 200) {
+                                            MyApp.navigatorKey.currentState!
+                                                .pushNamed('cancel_booked');
+                                          }
+
+                                          Navigator.of(context)
+                                              .pop();
+                                        },
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors
+                                              .green, 
+                                        ),
+                                        child: const Text(
+                                          'Sí',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+
                     ),
                   ),
                   const SizedBox(

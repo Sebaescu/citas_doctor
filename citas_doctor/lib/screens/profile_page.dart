@@ -1,3 +1,5 @@
+import "dart:convert";
+
 import "package:citas_doctor/main.dart";
 import "package:citas_doctor/utils/config.dart";
 import "package:flutter/material.dart";
@@ -13,8 +15,62 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? token;
+  Map<String, dynamic>? user; 
+  bool isLoading = true; 
+
+  Future<void> getUser() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      token = prefs.getString('token') ?? '';
+
+      if (token != null && token!.isNotEmpty) {
+        final response = await DioProvider().getUser(token!);
+
+        if (response != null && response is String) {
+          final decodedResponse = jsonDecode(response) as Map<String, dynamic>;
+          setState(() {
+            user = decodedResponse;
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+            user = null;
+          });
+          print("Error: Respuesta inesperada de getUser -> $response");
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+          user = null;
+        });
+      }
+    } catch (e) {
+      print("Error en getUser: $e");
+      setState(() {
+        isLoading = false;
+        user = null; 
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUser(); 
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (user == null) {
+      return Center(child: Text("No se pudo cargar la información del usuario."));
+    }
+
     return Column(
       children: [
         Expanded(
@@ -23,31 +79,32 @@ class _ProfilePageState extends State<ProfilePage> {
             width: double.infinity,
             color: Config.primaryColor,
             child: Column(
-              children: const <Widget>[
-                SizedBox(
-                  height: 110,
+              children: <Widget>[
+                const SizedBox(
+                  height: 65,
                 ),
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 65.0,
-                  backgroundImage: AssetImage('assets/profile1.jpg'),
+                  backgroundImage: AssetImage('assets/lucin.png'),
                   backgroundColor: Colors.white,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'Amanda Tan',
-                  style: TextStyle(
+                  user!['name'] ?? 'Sin nombre',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
+                // Mostrar la bio_data del usuario.
                 Text(
-                  '23 Years Old | Female',
-                  style: TextStyle(
+                  user!['bio_data'] ?? 'Sin información',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   ),
@@ -71,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         const Text(
-                          'Profile',
+                          'Opciones',
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w800,
@@ -94,7 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             TextButton(
                               onPressed: () {},
                               child: const Text(
-                                "Profile",
+                                "Perfil",
                                 style: TextStyle(
                                   color: Config.primaryColor,
                                   fontSize: 15,
@@ -118,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             TextButton(
                               onPressed: () {},
                               child: const Text(
-                                "History",
+                                "Historia",
                                 style: TextStyle(
                                   color: Config.primaryColor,
                                   fontSize: 15,
@@ -162,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 }
                               },
                               child: const Text(
-                                "Logout",
+                                "Cerrar Sesión",
                                 style: TextStyle(
                                   color: Config.primaryColor,
                                   fontSize: 15,

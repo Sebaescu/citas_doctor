@@ -101,7 +101,7 @@ class DioProvider {
       );
 
       if (response.statusCode == 200) {
-        return json.encode(response.data);  
+        return response.statusCode;  
       } else {
         return 'Error';  
       }

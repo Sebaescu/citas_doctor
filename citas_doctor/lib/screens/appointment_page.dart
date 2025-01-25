@@ -20,6 +20,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   FilterStatus status = FilterStatus.proximo; 
   Alignment _alignment = Alignment.centerLeft;
   List<dynamic> schedules = [];
+  String? token;
 
   Future<void> getAppointments() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -31,10 +32,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
       });
     }
   }
-
+  Future<void> getToken()async{
+    final SharedPreferences prefs=await SharedPreferences.getInstance();
+    token=prefs.getString('token')??'';
+  }
   @override
   void initState() {
     getAppointments();
+    getToken();
     super.initState();
   }
 
@@ -206,22 +211,88 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               children: [
                                 Expanded(
                                   child: OutlinedButton(
-                                    onPressed: () async {
-                                      var selectedAppointment = filteredSchedules[index];
-                                                                      final SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                    final token = prefs.getString('token') ?? '';
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: const FlutterLogo(
+                                              size: 100,
+                                            ),
+                                            title: const Text(
+                                              'Seguro que quieres cancelar la cita?',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            actions: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                      ),
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    child: TextButton(
+                                                      onPressed: () async {
+                                                        final cancel =
+                                                            await DioProvider()
+                                                                .cancelAppointment(
+                                                                    filteredSchedules[index]
+                                                                        ['id'],
+                                                                    token!);
+                                                        if (cancel == 200) {
+                                                          await MyApp.navigatorKey.currentState!
+                                                          .pushNamed('cancel_booked');
+                                                        }
 
-                                    if (token.isNotEmpty && token != '') {
-                                      
-                                      final response =
-                                          await DioProvider().cancelAppointment(selectedAppointment['id'], token);
-
-                                      if (response == 200) {
-                                          await getAppointments();
-                                          MyApp.navigatorKey.currentState!.pushNamed('main');
-                                      }
-                                    }
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            Colors.green,
+                                                      ),
+                                                      child: const Text(
+                                                        'Sí',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                                   },
                                     child: const Text(
                                       'Cancelar',

@@ -11,6 +11,7 @@ use App\Models\Appointments;
 use App\Models\UserDetails;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use PhpParser\Node\Expr\Print_;
 
 class UsersController extends Controller
 {
@@ -24,9 +25,11 @@ class UsersController extends Controller
         $doctor = User::where('type', 'doctor')->get();
         $details = $user->user_details;
         $doctorData = Doctor::all();
-        $date = now()->format('n/j/Y');
-        $appointment = Appointments::where('status', 'proximo')->where('date', $date)->first();
-
+        $appointment = Appointments::where('status', 'proximo')
+        ->where('user_id', $user->id)
+        ->where('date', '>=', now()->format('n/j/Y'))
+        ->orderBy('date', 'asc')
+        ->first();
         foreach($doctorData as $data){
             foreach($doctor as $info){
                 if($data['doc_id'] == $info['id']){
