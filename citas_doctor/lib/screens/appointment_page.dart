@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:citas_doctor/main.dart';
 import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
@@ -198,37 +199,98 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           ),
                           const SizedBox(
                             height: 15,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Cancelar',
-                                    style:
-                                        TextStyle(color: Config.primaryColor),
+                          ),                          
+                          if (status == FilterStatus.proximo)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () async {
+                                      var selectedAppointment = filteredSchedules[index];
+                                                                      final SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                    final token = prefs.getString('token') ?? '';
+
+                                    if (token.isNotEmpty && token != '') {
+                                      
+                                      final response =
+                                          await DioProvider().cancelAppointment(selectedAppointment['id'], token);
+
+                                      if (response == 200) {
+                                          await getAppointments();
+                                          MyApp.navigatorKey.currentState!.pushNamed('main');
+                                      }
+                                    }
+                                  },
+                                    child: const Text(
+                                      'Cancelar',
+                                      style:
+                                          TextStyle(color: Config.primaryColor),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Expanded(
-                                child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    backgroundColor: Config.primaryColor,
-                                  ),
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Reagendar',
-                                    style: TextStyle(color: Colors.white),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Config.primaryColor,
+                                    ),
+                                    onPressed: () {
+                                      var selectedAppointment = filteredSchedules[index];
+                                      Navigator.of(context).pushNamed('booking_page',arguments: {
+                                        'reagendar': true,
+                                        'appointment_data': selectedAppointment,
+                                      },);
+                                    },
+                                    child: const Text(
+                                      'Reagendar',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            )
+                          else if (status == FilterStatus.completado)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.grey,
+                                    ),
+                                    onPressed: () {},
+                                    child: const Text(
+                                      'Completado',
+                                      style:
+                                          TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          else if (status == FilterStatus.cancelado)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.grey,
+                                    ),
+                                    onPressed: () {},
+                                    child: const Text(
+                                      'Cancelado',
+                                      style:
+                                          TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),

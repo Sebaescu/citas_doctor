@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'package:citas_doctor/components/appointment_card.dart';
 import 'package:citas_doctor/components/doctor_card.dart';
+import 'package:citas_doctor/models/auth_model.dart';
 import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,7 +21,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Map<String, dynamic> user = {};
   Map<String, dynamic> doctor = {};
-  Map<String, dynamic> todayAppointment = {};
   List<dynamic> favList = [];
   List<Map<String, dynamic>> medCat = [
     {
@@ -48,48 +49,13 @@ class _HomePageState extends State<HomePage> {
     },
   ];
 
-  Future<void> getData()async{
-    final SharedPreferences prefs=await SharedPreferences.getInstance();
-    final token = prefs.getString('token')??'';
-
-    if(token.isNotEmpty&&token!=''){
-      final response=await DioProvider().getUser(token);
-      if(response!=null){
-        setState((){
-          user=json.decode(response);
-          for (var doctorData in user['doctor']) {
-              if (doctorData['appointments'] != null) {
-                doctor = doctorData;
-
-                final today = DateTime.now();
-                final formatter = DateFormat('M/d/yyyy');
-                final todayFormatted = formatter.format(today);
-
-                if (doctorData['appointments'] is Map<String, dynamic>) {
-                  var appointment = doctorData['appointments'];
-
-                  if (appointment['date'] == todayFormatted) {
-                    todayAppointment = appointment;
-                    break;
-                  }
-                }
-              }
-          }
-        });
-      }
-    }
-  }
-
-  @override
-  void initState(){
-    getData();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     Config().init(context);
-
+    user = Provider.of<AuthModel>(context, listen: false).getUser;
+    doctor = Provider.of<AuthModel>(context, listen: false).getAppointment;
+    favList = Provider.of<AuthModel>(context, listen: false).getFavDoc;
     return Scaffold(
       body: user.isEmpty?
       const Center(child: CircularProgressIndicator(),)
@@ -175,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Config.spaceSmall,
-                todayAppointment.isNotEmpty
+                doctor.isNotEmpty
                   ? AppointmentCard(
                       doctor: doctor,
                       color: Config.primaryColor,
@@ -211,8 +177,11 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   children: List.generate(user['doctor'].length, (index) {
                     return DoctorCard(
-                      route: 'doc_details',
                       doctor: user['doctor'][index],
+                      isFav: favList
+                            .contains(user['doctor'][index]['doc_id'])
+                        ? true
+                        : false,
                     );
                   }),
                 ),

@@ -76,6 +76,40 @@ class DioProvider {
     }
   }
 
+  Future<dynamic> updateAppoinment(String date, String day, String time, int id, String token)async{
+    try {
+      var response = await Dio().post('http://127.0.0.1:8000/api/reschedule',
+          data: {'date': date, 'day': day, 'time': time, 'id' : id},
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200 && response.data != '') {
+        return response.statusCode;
+      } else {
+        return 'Error';
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
+  Future<dynamic> cancelAppointment(int id, String token) async {
+    try {
+      var response = await Dio().post(
+        'http://127.0.0.1:8000/api/cancel/',
+        data: {'id' : id},
+        options: Options(headers: {'Authorization': 'Bearer $token'})
+      );
+
+      if (response.statusCode == 200) {
+        return json.encode(response.data);  
+      } else {
+        return 'Error';  
+      }
+    } catch (error) {
+      return error;  
+    }
+  }
+
   Future<dynamic> storeReviews(
       String reviews, double ratings, int id, int doctor, String token) async {
     try {
@@ -86,6 +120,39 @@ class DioProvider {
             'appointment_id': id,
             'doctor_id': doctor
           },
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200 && response.data != '') {
+        return response.statusCode;
+      } else {
+        return 'Error';
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
+  Future<dynamic> storeFavDoc(String token, List<dynamic> favList) async {
+    try {
+      var response = await Dio().post('http://127.0.0.1:8000/api/fav',
+          data: {
+            'favList': favList,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200 && response.data != '') {
+        return response.statusCode;
+      } else {
+        return 'Error';
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
+  Future<dynamic> logout(String token) async {
+    try {
+      var response = await Dio().post('http://127.0.0.1:8000/api/logout',
           options: Options(headers: {'Authorization': 'Bearer $token'}));
 
       if (response.statusCode == 200 && response.data != '') {

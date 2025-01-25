@@ -84,6 +84,43 @@ class AppointmentsController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function reschedule(Request $request)
+    {
+        $AppointmentId = $request->get('id');
+        $appointment = Appointments::find($AppointmentId);
+
+        $appointment->date = $request->get('date');
+        $appointment->day = $request->get('day');
+        $appointment->time = $request->get('time');
+
+        $appointment->save();
+
+        return response()->json([
+            'success' => 'La cita fue reagendada exitosamente.',
+        ], 200);
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function cancel(Request $request)
+    {
+        $AppointmentId = $request->get('id');
+        $appointment = Appointments::find($AppointmentId);
+
+        $appointment->status = 'cancelado';
+
+        $appointment->save();
+
+        return response()->json([
+            'success' => 'La Cita fue cancelada exitosamente!',
+        ], 200);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)

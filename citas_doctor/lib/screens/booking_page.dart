@@ -45,7 +45,13 @@ class _BookingPageState extends State<BookingPage> {
   @override
   Widget build(BuildContext context) {
     Config().init(context);
-    final doctor=ModalRoute.of(context)!.settings.arguments as Map;
+    final arguments = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final hasDoctor = arguments.containsKey('doctor_id');
+    final hasAppointmentData = arguments.containsKey('appointment_data');
+
+    final doctor = hasDoctor ? arguments['doctor_id'] as int : null;
+    final appointmentData = hasAppointmentData ? arguments['appointment_data'] : null;
+    final reagendar = arguments['reagendar'] as bool? ?? false;
     return Scaffold(
       appBar: CustomAppBar(
         appTitle: 'Calendario',
@@ -140,13 +146,20 @@ class _BookingPageState extends State<BookingPage> {
                   final getDay=DateConverted.getDay(_currentDay.weekday);
                   final getTime=DateConverted.getTime(_currentIndex!);
 
-                  final booking = await DioProvider().bookAppoinment(
-                      getDate, getDay, getTime, doctor['doctor_id'], token!);
-
-
-                  if (booking == 200) {
-                    MyApp.navigatorKey.currentState!
-                        .pushNamed('success_booked');
+                  if(reagendar == true){
+                    final update = await DioProvider().updateAppoinment(getDate, getDay, getTime,appointmentData['id'] ,token!);
+                    if (update == 200) {
+                      MyApp.navigatorKey.currentState!
+                          .pushNamed('success_booked');
+                    }
+                  }else{
+                    final booking = await DioProvider().bookAppoinment(
+                      getDate, getDay, getTime, doctor!, token!);
+                  
+                    if (booking == 200) {
+                      MyApp.navigatorKey.currentState!
+                          .pushNamed('success_booked');
+                    }
                   }
 
                 },

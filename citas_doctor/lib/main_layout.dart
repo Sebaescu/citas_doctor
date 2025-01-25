@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:citas_doctor/screens/appointment_page.dart';
 import 'package:citas_doctor/screens/home_page.dart';
+import 'package:citas_doctor/screens/fav_page.dart';
+import 'package:citas_doctor/screens/profile_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainLayout extends StatefulWidget {
@@ -26,7 +28,9 @@ class _MainLayoutState extends State<MainLayout> {
         }),
         children: <Widget>[
           const HomePage(),
+          FavPage(),
           const AppointmentPage(),
+          ProfilePage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -46,10 +50,17 @@ class _MainLayoutState extends State<MainLayout> {
             icon: FaIcon(FontAwesomeIcons.houseChimneyMedical),
             label: 'Home',
           ),
-
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.solidHeart),
+            label: 'Favoritos',
+          ),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.solidCalendarCheck),
             label: 'Citas',
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.solidUser),
+            label: 'Perfil',
           ),
         ],
       ),

@@ -22,6 +22,7 @@ class UsersController extends Controller
         $user = array();
         $user = Auth::user();
         $doctor = User::where('type', 'doctor')->get();
+        $details = $user->user_details;
         $doctorData = Doctor::all();
         $date = now()->format('n/j/Y');
         $appointment = Appointments::where('status', 'proximo')->where('date', $date)->first();
@@ -39,6 +40,7 @@ class UsersController extends Controller
         }
 
         $user['doctor'] = $doctorData;
+        $user['details'] = $details;
 
         return $user;
     }
@@ -89,6 +91,43 @@ class UsersController extends Controller
 
         return $user;
     }
+
+
+    /**
+     * update favorite doctor list
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeFavDoc(Request $request)
+    {
+
+        $saveFav = UserDetails::where('user_id',Auth::user()->id)->first();
+
+        $docList = json_encode($request->get('favList'));
+
+        $saveFav->fav = $docList;
+        $saveFav->save();
+
+        return response()->json([
+            'success'=>'La lista de doctores favoritos se actualizó correctamente',
+        ], 200);
+    }
+
+    /**
+     * logout.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(){
+        $user = Auth::user();
+        $user->currentAccessToken()->delete();
+
+        return response()->json([
+            'success'=>'Cierre de sesión exitosa!',
+        ], 200);
+    }
+
 
     /**
      * Show the form for creating a new resource.

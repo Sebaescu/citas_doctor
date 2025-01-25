@@ -1,14 +1,16 @@
 
+import 'package:citas_doctor/main.dart';
+import 'package:citas_doctor/screens/doctor_details.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 
 class DoctorCard extends StatelessWidget {
   const DoctorCard({
-    Key? key, required this.route, required this.doctor
+    Key? key, required this.doctor, required this.isFav,
   }) : super(key: key);
 
-  final String route;
   final Map<String,dynamic> doctor;
+   final bool isFav;
   @override
   Widget build(BuildContext context) {
     Config().init(context);
@@ -83,7 +85,11 @@ class DoctorCard extends StatelessWidget {
           ),
         ),
         onTap: () {
-          Navigator.of(context).pushNamed(route,arguments:doctor);
+          MyApp.navigatorKey.currentState!.push(MaterialPageRoute(
+              builder: (_) => DoctorDetails(
+                    doctor: doctor,
+                    isFav: isFav,
+                  )));
         },
       ),
     );
