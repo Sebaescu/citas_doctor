@@ -18,35 +18,4 @@ class DioProvider {
       return error;
     }
   }
-
-  Future<dynamic> getUser(String token) async {
-    try {
-      var user = await Dio().get('http://127.0.0.1:8000/api/user',
-          options: Options(headers: {'Authorization': 'Bearer $token'}));
-      if (user.statusCode == 200 && user.dara != '') {
-        return json.encode(user.data);
-      }
-    } catch (error) {
-      return error;
-    }
-  }
-
-  Future<dynamic> registerUser(String username,String email,String password) async {
-    try {
-      var user = await Dio().post('http://127.0.0.1:8000/api/user',
-          data: {'name':username,'email': email, 'password': password});
-      if (user.statusCode == 201 && user.dara != '') {
-        return true;
-      }else{
-        return false;
-      }
-    } catch (error) {
-      return error;
-    }
-  }
-
-  Future<dynamic> bookAppoinment(String date, String day, String time
-  )async{
-
-  }
 }
