@@ -97,7 +97,6 @@ class UsersController extends Controller
 
 
     /**
-     * update favorite doctor list
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -114,6 +113,25 @@ class UsersController extends Controller
 
         return response()->json([
             'success'=>'La lista de doctores favoritos se actualizó correctamente',
+        ], 200);
+    }
+
+    /**
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateBioData(Request $request)
+    {
+
+        $userDetails = UserDetails::where('user_id',Auth::user()->id)->first();
+
+        $userDetails->bio_data = $request->get('bio_data');
+
+        $userDetails->save();
+
+        return response()->json([
+            'success'=>'La Bio Data se actualizó correctamente.',
         ], 200);
     }
 

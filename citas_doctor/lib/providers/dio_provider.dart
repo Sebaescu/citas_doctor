@@ -150,6 +150,24 @@ class DioProvider {
     }
   }
 
+  Future<dynamic> storeBioData(String token, String bioData) async {
+    try {
+      var response = await Dio().post('http://127.0.0.1:8000/api/bio',
+          data: {
+            'bio_data': bioData,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200 && response.data != '') {
+        return response.statusCode;
+      } else {
+        return 'Error';
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
   Future<dynamic> logout(String token) async {
     try {
       var response = await Dio().post('http://127.0.0.1:8000/api/logout',

@@ -1,10 +1,8 @@
 import "dart:convert";
-
 import "package:citas_doctor/main.dart";
 import "package:citas_doctor/utils/config.dart";
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
-
 import "../providers/dio_provider.dart";
 
 class ProfilePage extends StatefulWidget {
@@ -16,8 +14,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String? token;
-  Map<String, dynamic>? user; 
-  bool isLoading = true; 
+  Map<String, dynamic>? user;
+  bool isLoading = true;
 
   Future<void> getUser() async {
     try {
@@ -50,15 +48,82 @@ class _ProfilePageState extends State<ProfilePage> {
       print("Error en getUser: $e");
       setState(() {
         isLoading = false;
-        user = null; 
+        user = null;
       });
     }
+  }
+
+  void showProfilePopup() {
+    final TextEditingController bioController = TextEditingController(text: user?['bio_data'] ?? '');
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Editar Perfil"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 50.0,
+                backgroundImage: user?['photo'] != null
+                    ? NetworkImage(user!['photo']) as ImageProvider
+                    : const AssetImage('assets/lucin.png'),
+                backgroundColor: Colors.grey[300],
+              ),
+              TextButton(
+                onPressed: () {
+                  print("Cambiar foto presionado");
+                },
+                child: const Text(
+                  "Cambiar foto",
+                  style: TextStyle(color: Config.primaryColor),
+                ),
+              ),
+              TextField(
+                controller: bioController,
+                decoration: const InputDecoration(
+                  labelText: "Biografía",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cerrar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final updatedBio = bioController.text.toString();
+
+                if (token != null && token!.isNotEmpty) {
+                  final response = await DioProvider().storeBioData(token!,updatedBio,);
+
+                  if (response == 200) {
+                    setState(() {
+                      user!['bio_data'] = updatedBio;
+                    });
+                    Navigator.of(context).pop();
+                  } else {
+                    print("Error al actualizar la biografía");
+                  }
+                }
+              },
+              child: const Text("Guardar"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    getUser(); 
+    getUser();
   }
 
   @override
@@ -101,9 +166,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(
                   height: 10,
                 ),
-                // Mostrar la bio_data del usuario.
                 Text(
-                  user!['bio_data'] ?? 'Sin información',
+                  user?['user_details']?['bio_data'] ?? 'Sin información',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
@@ -149,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               width: 20,
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: showProfilePopup,
                               child: const Text(
                                 "Perfil",
                                 style: TextStyle(
@@ -203,15 +267,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                 final token = prefs.getString('token') ?? '';
 
                                 if (token.isNotEmpty && token != '') {
-                                  
                                   final response =
                                       await DioProvider().logout(token);
 
                                   if (response == 200) {
-
                                     await prefs.remove('token');
                                     setState(() {
-                                      
                                       MyApp.navigatorKey.currentState!
                                           .pushReplacementNamed('/');
                                     });
@@ -240,3 +301,4 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
