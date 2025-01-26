@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\DocsController;
+use App\Http\Controllers\ProfileController;
 
 Route::post('/login', [UsersController::class, 'login']);
 Route::post('/register', [UsersController::class, 'register']);
@@ -19,4 +20,5 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/cancel', [AppointmentsController::class, 'cancel']);
     Route::post('/reviews', [DocsController::class, 'store']);
     Route::get('/appointments', [AppointmentsController::class, 'index']);
+    //Route::middleware('auth:sanctum')->post('/user/profile-photo', [ProfileController::class, 'updateProfilePhoto']);
 });

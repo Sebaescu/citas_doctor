@@ -70,7 +70,9 @@ class UsersController extends Controller
     }
 
     /**
-     * Registro
+     * registro
+     *
+     * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
     {
@@ -89,6 +91,8 @@ class UsersController extends Controller
 
         $userInfo = UserDetails::create([
             'user_id'=>$user->id,
+            'bio_data'=>'',
+            'fav' => json_encode([]),
             'status'=>'active',
         ]);
 

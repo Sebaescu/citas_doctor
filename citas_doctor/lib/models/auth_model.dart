@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:flutter/material.dart';
 
 class AuthModel extends ChangeNotifier{
@@ -50,10 +49,13 @@ class AuthModel extends ChangeNotifier{
 
     user = userData;
     appointment = appointmentInfo;
-    if (user['details']['fav'] != null) {
+    if (user['details']['fav'] != []) {
       _fav = json.decode(user['details']['fav']);
+    } else {
+    _fav = [];
     }
-
+  
     notifyListeners();
   }
+
 }
