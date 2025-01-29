@@ -2,7 +2,7 @@ import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 
 class SocialButton extends StatelessWidget {
-  const SocialButton({super.key, required this.social});
+  const SocialButton({Key? key, required this.social}) : super(key: key);
 
   final String social;
 

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../utils/config.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
+  SignUpForm({Key? key}) : super(key: key);
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
@@ -82,23 +82,29 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           Config.spaceSmall,
           Consumer<AuthModel>(
-            builder:(context,auth,child){
+            builder: (context, auth, child) {
               return Button(
                 width: double.infinity,
-                title: 'Iniciar Sesión',
-                onPressed: ()async {
-                  final userRegistration=await DioProvider().registerUser(_nameController.text,_emailController,text,_passController.text);
-                  if(userRegistration){
-                    final token=await.DioProvider().getToken(_emailController.text,_passController.text);
-                    if(token){
-                    auth.loginSucess();
-                    MyApp.navigatorKey.currentState!.pushNamed('main');
+                title: 'Sign Up',
+                onPressed: () async {
+                  final userRegistration = await DioProvider().registerUser(
+                      _nameController.text,
+                      _emailController.text,
+                      _passController.text);
+
+                  //if register success, proceed to login
+                  if (userRegistration) {
+                    final token = await DioProvider()
+                        .getToken(_emailController.text, _passController.text);
+
+                    if (token) {
+                      auth.loginSuccess({}, {}); //update login status
+                      //rediret to main page
+                      MyApp.navigatorKey.currentState!.pushNamed('main');
                     }
-                  }else{
-                    print('Registro no exitoso.')
+                  } else {
+                    print('register not successful');
                   }
-                  //final token=await DioProvider().getToken(_emailController.text,_passController.text);
-                  
                 },
                 disable: false,
               );

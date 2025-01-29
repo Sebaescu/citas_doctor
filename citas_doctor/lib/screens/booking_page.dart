@@ -1,6 +1,8 @@
 import 'package:citas_doctor/components/button.dart';
 import 'package:citas_doctor/components/custom_appbar.dart';
 import 'package:citas_doctor/main.dart';
+import 'package:citas_doctor/models/booking_datetime_converted.dart';
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,7 +19,7 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
-
+  //declaration
   CalendarFormat _format = CalendarFormat.month;
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
@@ -25,14 +27,15 @@ class _BookingPageState extends State<BookingPage> {
   bool _isWeekend = false;
   bool _dateSelected = false;
   bool _timeSelected = false;
-  String? token;
+  String? token; //get token for insert booking date and time into database
 
-  Future<void> getToken()async{
-    final SharedPrefeferences prefs=await SharedPrefeferences.getInstance();
-    token=prefs.getString('token')??'';
+  Future<void> getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token') ?? '';
   }
 
-  void initState(){
+  @override
+  void initState() {
     getToken();
     super.initState();
   }
@@ -40,10 +43,10 @@ class _BookingPageState extends State<BookingPage> {
   @override
   Widget build(BuildContext context) {
     Config().init(context);
-    final doctor=ModalRoute.of(context)!.settings.arguments as Map;
+    final doctor = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
       appBar: CustomAppBar(
-        appTitle: 'Calendario',
+        appTitle: 'Appointment',
         icon: const FaIcon(Icons.arrow_back_ios),
       ),
       body: CustomScrollView(
@@ -56,7 +59,7 @@ class _BookingPageState extends State<BookingPage> {
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
                   child: Center(
                     child: Text(
-                      'Seleciona tiempo de consulta',
+                      'Select Consultation Time',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -74,7 +77,7 @@ class _BookingPageState extends State<BookingPage> {
                         horizontal: 10, vertical: 30),
                     alignment: Alignment.center,
                     child: const Text(
-                      'Fin de semana no disponible, intente otro día',
+                      'Weekend is not available, please select another date',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -129,12 +132,22 @@ class _BookingPageState extends State<BookingPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 80),
               child: Button(
                 width: double.infinity,
-                title: 'Agendar Cita',
-                onPressed: () async{
-                  final getDate=DateConverted().getDate(_currentDay);
-                  final getDay=DateConverted.getDay(_currentDay.weekday);
-                  final getTime=DateConverted.getTime(_currentIndex!);
-                  Navigator.of(context).pushNamed('success_booking');
+                title: 'Make Appointment',
+                onPressed: () async {
+                  //convert date/day/time into string first
+                  final getDate = DateConverted.getDate(_currentDay);
+                  final getDay = DateConverted.getDay(_currentDay.weekday);
+                  final getTime = DateConverted.getTime(_currentIndex!);
+
+                  final booking = await DioProvider().bookAppointment(
+                      getDate, getDay, getTime, doctor['doctor_id'], token!);
+
+                  //if booking return status code 200, then redirect to success booking page
+
+                  if (booking == 200) {
+                    MyApp.navigatorKey.currentState!
+                        .pushNamed('success_booking');
+                  }
                 },
                 disable: _timeSelected && _dateSelected ? false : true,
               ),
@@ -145,12 +158,12 @@ class _BookingPageState extends State<BookingPage> {
     );
   }
 
+  //table calendar
   Widget _tableCalendar() {
     return TableCalendar(
-      locale: 'es_ES',
       focusedDay: _focusDay,
       firstDay: DateTime.now(),
-      lastDay: DateTime(2025, 12, 31),
+      lastDay: DateTime(2023, 12, 31),
       calendarFormat: _format,
       currentDay: _currentDay,
       rowHeight: 48,
@@ -159,7 +172,7 @@ class _BookingPageState extends State<BookingPage> {
             BoxDecoration(color: Config.primaryColor, shape: BoxShape.circle),
       ),
       availableCalendarFormats: const {
-        CalendarFormat.month: 'Mes',
+        CalendarFormat.month: 'Month',
       },
       onFormatChanged: (format) {
         setState(() {
@@ -172,7 +185,7 @@ class _BookingPageState extends State<BookingPage> {
           _focusDay = focusedDay;
           _dateSelected = true;
 
-          
+          //check if weekend is selected
           if (selectedDay.weekday == 6 || selectedDay.weekday == 7) {
             _isWeekend = true;
             _timeSelected = false;

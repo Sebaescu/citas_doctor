@@ -1,33 +1,33 @@
-import 'package:citas_doctor/screens/booking_page.dart';
-import 'package:citas_doctor/screens/doctor_details.dart';
-import 'package:citas_doctor/screens/success_booked.dart';
-import 'package:flutter/material.dart';
-import 'package:citas_doctor/utils/config.dart';
-import 'package:citas_doctor/screens/auth_page.dart';
 import 'package:citas_doctor/main_layout.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:citas_doctor/models/auth_model.dart';
+import 'package:citas_doctor/screens/auth_page.dart';
+import 'package:citas_doctor/screens/booking_page.dart';
+import 'package:citas_doctor/screens/success_booked.dart';
+import 'package:citas_doctor/utils/config.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('es_ES', null);
-  runApp(MyApp());
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  //this is for push navigator
   static final navigatorKey = GlobalKey<NavigatorState>();
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
+    //define ThemeData here
     return ChangeNotifierProvider<AuthModel>(
-      create:(context)=>AuthModel(),
+      create: (context) => AuthModel(),
       child: MaterialApp(
         navigatorKey: navigatorKey,
         title: 'Flutter Doctor App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          //pre-define input decoration
           inputDecorationTheme: const InputDecorationTheme(
             focusColor: Config.primaryColor,
             border: Config.outlinedBorder,
@@ -47,16 +47,16 @@ class MyApp extends StatelessWidget {
             elevation: 10,
             type: BottomNavigationBarType.fixed,
           ),
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const AuthPage(),
+          'main': (context) => const MainLayout(),
+          'booking_page': (context) => BookingPage(),
+          'success_booking': (context) => const AppointmentBooked(),
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const AuthPage(),
-        'main': (context) => const MainLayout(),
-        'doc_details': (context) => const DoctorDetails(),
-        'booking_page': (context) => BookingPage(),
-        'success_booking': (context) => const AppointmentBooked(),
-      },
-    ));
+    );
   }
 }
 

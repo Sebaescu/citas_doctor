@@ -1,17 +1,21 @@
 
-import 'package:flutter/material.dart';
+
 import 'package:citas_doctor/screens/appointment_page.dart';
+import 'package:citas_doctor/screens/fav_page.dart';
 import 'package:citas_doctor/screens/home_page.dart';
+import 'package:citas_doctor/screens/profile_page.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+  const MainLayout({Key? key}) : super(key: key);
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  //variable declaration
   int currentPage = 0;
   final PageController _page = PageController();
   @override
@@ -26,7 +30,9 @@ class _MainLayoutState extends State<MainLayout> {
         }),
         children: <Widget>[
           const HomePage(),
+          FavPage(),
           const AppointmentPage(),
+          ProfilePage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -46,10 +52,17 @@ class _MainLayoutState extends State<MainLayout> {
             icon: FaIcon(FontAwesomeIcons.houseChimneyMedical),
             label: 'Home',
           ),
-
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.solidHeart),
+            label: 'Favorite',
+          ),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.solidCalendarCheck),
-            label: 'Citas',
+            label: 'Appointments',
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.solidUser),
+            label: 'Profile',
           ),
         ],
       ),

@@ -1,9 +1,16 @@
-
+import 'package:citas_doctor/main.dart';
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
+import 'package:rating_dialog/rating_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppointmentCard extends StatefulWidget {
-  AppointmentCard({Key? key}): super(key: key);
+  AppointmentCard({Key? key, required this.doctor, required this.color})
+      : super(key: key);
+
+  final Map<String, dynamic> doctor;
+  final Color color;
 
   @override
   State<AppointmentCard> createState() => _AppointmentCardState();
@@ -15,7 +22,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Config.primaryColor,
+        color: widget.color,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Material(
@@ -24,11 +31,12 @@ class _AppointmentCardState extends State<AppointmentCard> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: <Widget>[
+              //insert Row here
               Row(
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage(
-                        'assets/doctor_1.jpg'),
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        "http://127.0.0.1:8000${widget.doctor['doctor_profile']}"), //insert doctor profile
                   ),
                   const SizedBox(
                     width: 10,
@@ -36,25 +44,29 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Text(
-                        'Dr Miguel Perez',
-                        style: TextStyle(color: Colors.white),
+                        'Dr ${widget.doctor['doctor_name']}',
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 2,
                       ),
                       Text(
-                        'Odontología',
-                        style: TextStyle(color: Colors.black),
+                        widget.doctor['category'],
+                        style: const TextStyle(color: Colors.black),
                       )
                     ],
                   ),
                 ],
               ),
               Config.spaceSmall,
-              ScheduleCard(),
+              //Schedule info here
+              ScheduleCard(
+                appointment: widget.doctor['appointments'],
+              ),
               Config.spaceSmall,
+              //action button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -64,7 +76,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                         backgroundColor: Colors.red,
                       ),
                       child: const Text(
-                        'Cancelar',
+                        'Cancel',
                         style: TextStyle(color: Colors.white),
                       ),
                       onPressed: () {},
@@ -78,15 +90,64 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                       ),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return RatingDialog(
+                                  initialRating: 1.0,
+                                  title: const Text(
+                                    'Rate the Doctor',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  message: const Text(
+                                    'Please help us to rate our Doctor',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  image: const FlutterLogo(
+                                    size: 100,
+                                  ),
+                                  submitButtonText: 'Submit',
+                                  commentHint: 'Your Reviews',
+                                  onSubmitted: (response) async {
+                                    final SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    final token =
+                                        prefs.getString('token') ?? '';
+
+                                    final rating = await DioProvider()
+                                        .storeReviews(
+                                            response.comment,
+                                            response.rating,
+                                            widget.doctor['appointments']
+                                                ['id'], //this is appointment id
+                                            widget.doctor[
+                                                'doc_id'], //this is doctor id
+                                            token);
+
+                                    //if successful, then refresh
+                                    if (rating == 200 && rating != '') {
+                                      MyApp.navigatorKey.currentState!
+                                          .pushNamed('main');
+                                    }
+                                  });
+                            });
+                      },
                       child: const Text(
-                        'Completar',
+                        'Completed',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () {},
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),
@@ -97,7 +158,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
 //Schedule Widget
 class ScheduleCard extends StatelessWidget {
-  const ScheduleCard({Key? key}) : super(key: key);
+  const ScheduleCard({Key? key, required this.appointment}) : super(key: key);
+  final Map<String, dynamic> appointment;
 
   @override
   Widget build(BuildContext context) {
@@ -110,34 +172,34 @@ class ScheduleCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const <Widget>[
-          Icon(
+        children: <Widget>[
+          const Icon(
             Icons.calendar_today,
             color: Colors.white,
             size: 15,
           ),
-          SizedBox(
+          const SizedBox(
             width: 5,
           ),
           Text(
-            'Lunes, 13/01/2025',
-            style: TextStyle(color: Colors.white),
+            '${appointment['day']}, ${appointment['date']}',
+            style: const TextStyle(color: Colors.white),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
-          Icon(
+          const Icon(
             Icons.access_alarm,
             color: Colors.white,
             size: 17,
           ),
-          SizedBox(
+          const SizedBox(
             width: 5,
           ),
           Flexible(
               child: Text(
-            '2:00 PM',
-            style: TextStyle(color: Colors.white),
+            appointment['time'],
+            style: const TextStyle(color: Colors.white),
           ))
         ],
       ),

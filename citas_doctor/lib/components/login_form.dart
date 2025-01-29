@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 import 'package:citas_doctor/components/button.dart';
 import 'package:citas_doctor/main.dart';
@@ -5,11 +6,12 @@ import 'package:citas_doctor/models/auth_model.dart';
 import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/config.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+  const LoginForm({Key? key}) : super(key: key);
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -32,8 +34,8 @@ class _LoginFormState extends State<LoginForm> {
             keyboardType: TextInputType.emailAddress,
             cursorColor: Config.primaryColor,
             decoration: const InputDecoration(
-              hintText: 'Correo Electrónico',
-              labelText: 'Correo Electrónico',
+              hintText: 'Email Address',
+              labelText: 'Email',
               alignLabelWithHint: true,
               prefixIcon: Icon(Icons.email_outlined),
               prefixIconColor: Config.primaryColor,
@@ -46,8 +48,8 @@ class _LoginFormState extends State<LoginForm> {
             cursorColor: Config.primaryColor,
             obscureText: obsecurePass,
             decoration: InputDecoration(
-                hintText: 'Contraseña',
-                labelText: 'Contraseña',
+                hintText: 'Password',
+                labelText: 'Password',
                 alignLabelWithHint: true,
                 prefixIcon: const Icon(Icons.lock_outline),
                 prefixIconColor: Config.primaryColor,
@@ -69,20 +71,49 @@ class _LoginFormState extends State<LoginForm> {
           ),
           Config.spaceSmall,
           Consumer<AuthModel>(
-            builder: (context,auth,child){
+            builder: (context, auth, child) {
               return Button(
-                width: double.infinity, 
-                title: 'Iniciar Sesión', 
-                onPressed: ()async {
-                  final token=await DioProvider().getToken(_emailController.text,_passController.text);
-                  if(token){
-                    auth.loginSuccess();
-                    MyApp.navigatorKey.currentState!.pushNamed('main');
+                width: double.infinity,
+                title: 'Sign In',
+                onPressed: () async {
+                  //login here
+                  final token = await DioProvider()
+                      .getToken(_emailController.text, _passController.text);
+
+                  if (token) {
+                    //auth.loginSuccess(); //update login status
+                    //rediret to main page
+
+                    //grab user data here
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    final tokenValue = prefs.getString('token') ?? '';
+
+                    if (tokenValue.isNotEmpty && tokenValue != '') {
+                      //get user data
+                      final response = await DioProvider().getUser(tokenValue);
+                      if (response != null) {
+                        setState(() {
+                          //json decode
+                          Map<String, dynamic> appointment = {};
+                          final user = json.decode(response);
+
+                          //check if any appointment today
+                          for (var doctorData in user['doctor']) {
+                            //if there is appointment return for today
+
+                            if (doctorData['appointments'] != null) {
+                              appointment = doctorData;
+                            }
+                          }
+
+                          auth.loginSuccess(user, appointment);
+                          MyApp.navigatorKey.currentState!.pushNamed('main');
+                        });
+                      }
+                    }
                   }
-                  final user=await DioProvider().getUser();
-                  //print(token);
-                  Navigator.of(context).pushNamed('main');
-                }, 
+                },
                 disable: false,
               );
             },

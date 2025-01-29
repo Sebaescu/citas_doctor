@@ -1,6 +1,8 @@
-
+import 'package:citas_doctor/providers/dio_provider.dart';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class AppointmentPage extends StatefulWidget {
   const AppointmentPage({Key? key}) : super(key: key);
@@ -9,54 +11,46 @@ class AppointmentPage extends StatefulWidget {
   State<AppointmentPage> createState() => _AppointmentPageState();
 }
 
-enum FilterStatus { proximo, completado, cancelado }
+//enum for appointment status
+enum FilterStatus { upcoming, complete, cancel }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  FilterStatus status = FilterStatus.proximo; 
+  FilterStatus status = FilterStatus.upcoming; //initial status
   Alignment _alignment = Alignment.centerLeft;
-  List<dynamic> schedules = [
-    {
-      "doctor_name":"Daniel Suarez",
-      "doctor_profile":"assets/doctor_2.jpg",
-      "category":"Cardiología",
-      "status":FilterStatus.proximo,
-    },
-    {
-      'doctor_name':'Miguel Perez',
-      'doctor_profile':'assets/doctor_1.jpg',
-      'category':'Odontología',
-      'status':FilterStatus.proximo,
-    },
-    {
-      'doctor_name':'Andres Ochoa',
-      'doctor_profile':'assets/doctor_3.jpg',
-      'category':'General',
-      'status':FilterStatus.completado,
-    },
-    {
-      'doctor_name':'Javier Lucin',
-      'doctor_profile':'assets/doctor_4.jpg',
-      'category':'Ginecología',
-      'status':FilterStatus.cancelado,
-    },
-    
-  ];
+  List<dynamic> schedules = [];
+
+  //get appointments details
+  Future<void> getAppointments() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    final appointment = await DioProvider().getAppointments(token);
+    if (appointment != 'Error') {
+      setState(() {
+        schedules = json.decode(appointment);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getAppointments();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     List<dynamic> filteredSchedules = schedules.where((var schedule) {
-      /*
       switch (schedule['status']) {
-        case 'proximo':
-          schedule['status'] = FilterStatus.proximo;
+        case 'upcoming':
+          schedule['status'] = FilterStatus.upcoming;
           break;
-        case 'completado':
-          schedule['status'] = FilterStatus.completado;
+        case 'complete':
+          schedule['status'] = FilterStatus.complete;
           break;
-        case 'cancelado':
-          schedule['status'] = FilterStatus.cancelado;
+        case 'cancel':
+          schedule['status'] = FilterStatus.cancel;
           break;
-      }*/
+      }
       return schedule['status'] == status;
     }).toList();
 
@@ -67,7 +61,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             const Text(
-              'Agenda de Citas',
+              'Appointment Schedule',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
@@ -87,21 +81,22 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      //this is the filter tabs
                       for (FilterStatus filterStatus in FilterStatus.values)
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
-                                if (filterStatus == FilterStatus.proximo) {
-                                  status = FilterStatus.proximo;
+                                if (filterStatus == FilterStatus.upcoming) {
+                                  status = FilterStatus.upcoming;
                                   _alignment = Alignment.centerLeft;
                                 } else if (filterStatus ==
-                                    FilterStatus.completado) {
-                                  status = FilterStatus.completado;
+                                    FilterStatus.complete) {
+                                  status = FilterStatus.complete;
                                   _alignment = Alignment.center;
                                 } else if (filterStatus ==
-                                    FilterStatus.cancelado) {
-                                  status = FilterStatus.cancelado;
+                                    FilterStatus.cancel) {
+                                  status = FilterStatus.cancel;
                                   _alignment = Alignment.centerRight;
                                 }
                               });
@@ -162,8 +157,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           Row(
                             children: [
                               CircleAvatar(
-                                backgroundImage: 
-                                AssetImage(schedule['doctor_profile']),
+                                backgroundImage: NetworkImage(
+                                    "http://127.0.0.1:8000${schedule['doctor_profile']}"),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -196,7 +191,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           const SizedBox(
                             height: 15,
                           ),
-                          const ScheduleCard(),
+                          ScheduleCard(
+                            date: schedule['date'],
+                            day: schedule['day'],
+                            time: schedule['time'],
+                          ),
                           const SizedBox(
                             height: 15,
                           ),
@@ -207,7 +206,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 child: OutlinedButton(
                                   onPressed: () {},
                                   child: const Text(
-                                    'Cancelar',
+                                    'Cancel',
                                     style:
                                         TextStyle(color: Config.primaryColor),
                                   ),
@@ -223,7 +222,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   ),
                                   onPressed: () {},
                                   child: const Text(
-                                    'Reagendar',
+                                    'Reschedule',
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -245,7 +244,12 @@ class _AppointmentPageState extends State<AppointmentPage> {
 }
 
 class ScheduleCard extends StatelessWidget {
-  const ScheduleCard({Key? key}): super(key: key);
+  const ScheduleCard(
+      {Key? key, required this.date, required this.day, required this.time})
+      : super(key: key);
+  final String date;
+  final String day;
+  final String time;
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +273,7 @@ class ScheduleCard extends StatelessWidget {
             width: 5,
           ),
           Text(
-            'Lunes, 13/01/2025',
+            '$day, $date',
             style: const TextStyle(
               color: Config.primaryColor,
             ),
@@ -287,7 +291,7 @@ class ScheduleCard extends StatelessWidget {
           ),
           Flexible(
               child: Text(
-            '2:00 PM',
+            time,
             style: const TextStyle(
               color: Config.primaryColor,
             ),

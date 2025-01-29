@@ -1,51 +1,51 @@
 import 'package:intl/intl.dart';
 
-class DateConverted{
-  static String getDate(DateTime date){
-    return DateFormat.yMd(.format(date));
+class DateConverted {
+  static String getDate(DateTime date) {
+    return DateFormat.yMd().format(date);
   }
 
-  static String getDay(int day){
-    switch(day){
+  static String getDay(int day) {
+    switch (day) {
       case 1:
-      return 'Monday';
+        return 'Monday';
       case 2:
-      return 'Tueday';
+        return 'Tuesday';
       case 3:
-      return 'Wednesday';
+        return 'Wednesday';
       case 4:
-      return 'Thursday';
+        return 'Thursday';
       case 5:
-      return 'Friday';
+        return 'Friday';
       case 6:
-      return 'Saturday';
+        return 'Saturday';
       case 7:
-      return 'Sunday';
+        return 'Sunday';
       default:
-      return 'Sunday';
+        return 'Sunday';
     }
   }
 
-  static String getTime(int time){
-    switch (time){
+  static String getTime(int time) {
+    switch (time) {
       case 0:
-      return '9:00 AM';
+        return '9:00 AM';
       case 1:
-      return '10:00 AM';
+        return '10:00 AM';
       case 2:
-      return '11:00 AM';
+        return '11:00 AM';
       case 3:
-      return '12:00 PM';
+        return '12:00 PM';
       case 4:
-      return '13:00 PM';
+        return '13:00 PM';
       case 5:
-      return '14:00 PM';
+        return '14:00 PM';
       case 6:
-      return '15:00 PM';
+        return '15:00 PM';
       case 7:
-      return '16:00 PM';
+        return '16:00 PM';
       default:
-      return '9:00 AM';
+        return '9:00 AM';
     }
   }
 }

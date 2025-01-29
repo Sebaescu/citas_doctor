@@ -20,7 +20,7 @@ class AppointmentBooked extends StatelessWidget {
               width: double.infinity,
               alignment: Alignment.center,
               child: const Text(
-                'Cita Agendada',
+                'Successfully Booked',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -28,11 +28,12 @@ class AppointmentBooked extends StatelessWidget {
               ),
             ),
             const Spacer(),
+            //back to home page
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Button(
                 width: double.infinity,
-                title: 'Regresar al Menu Principal',
+                title: 'Back to Home Page',
                 onPressed: () => Navigator.of(context).pushNamed('main'),
                 disable: false,
               ),
