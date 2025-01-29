@@ -20,5 +20,4 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/cancel', [AppointmentsController::class, 'cancel']);
     Route::post('/reviews', [DocsController::class, 'store']);
     Route::get('/appointments', [AppointmentsController::class, 'index']);
-    //Route::middleware('auth:sanctum')->post('/user/profile-photo', [ProfileController::class, 'updateProfilePhoto']);
 });

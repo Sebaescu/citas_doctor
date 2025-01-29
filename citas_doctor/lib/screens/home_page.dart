@@ -1,6 +1,7 @@
 import 'package:citas_doctor/components/appointment_card.dart';
 import 'package:citas_doctor/components/doctor_card.dart';
 import 'package:citas_doctor/models/auth_model.dart';
+import 'package:citas_doctor/screens/doctorListScreen';
 import 'package:citas_doctor/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -92,41 +93,53 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Config.spaceSmall,
-                SizedBox(
-                  height: Config.heightSize * 0.07,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: List<Widget>.generate(medCat.length, (index) {
-                      return Card(
-                        margin: const EdgeInsets.only(right: 25),
-                        color: Config.primaryColor,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              FaIcon(
-                                medCat[index]['icon'],
-                                color: Colors.white,
-                              ),
-                              const SizedBox(
-                                width: 25,
-                              ),
-                              Text(
-                                medCat[index]['category'],
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
+                  SizedBox(
+                        height: Config.heightSize * 0.07,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              List<Widget>.generate(medCat.length, (index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DoctorListScreen(
+                                        category: medCat[index]['category']),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                margin: const EdgeInsets.only(right: 25),
+                                color: Config.primaryColor,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      FaIcon(
+                                        medCat[index]['icon'],
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 25),
+                                      Text(
+                                        medCat[index]['category'],
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          }),
                         ),
-                      );
-                    }),
-                  ),
-                ),
+                      ),
+
                 Config.spaceSmall,
                 const Text(
                   'Próxima Cita',

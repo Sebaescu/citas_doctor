@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:citas_doctor/models/auth_model.dart';
+import 'package:citas_doctor/components/doctor_card.dart';
+
+class DoctorListScreen extends StatelessWidget {
+  final String category;
+
+  const DoctorListScreen({Key? key, required this.category}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final authModel = Provider.of<AuthModel>(context, listen: false);
+    final user = authModel.getUser;
+    final favList = authModel.getFavDoc; 
+
+    final List doctors = user['doctor']
+        .where((doctor) => doctor['category'] == category)
+        .toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Doctores de $category'),
+      ),
+      body: doctors.isEmpty
+          ? const Center(child: Text('No hay doctores en esta categoría'))
+          : ListView.builder(
+              itemCount: doctors.length,
+              itemBuilder: (context, index) {
+                final doctor = doctors[index];
+                return DoctorCard(
+                  doctor: doctor,
+                  isFav: favList.contains(doctor['doc_id']),
+                );
+              },
+            ),
+    );
+  }
+}
