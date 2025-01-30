@@ -163,7 +163,7 @@ class _BookingPageState extends State<BookingPage> {
     return TableCalendar(
       focusedDay: _focusDay,
       firstDay: DateTime.now(),
-      lastDay: DateTime(2023, 12, 31),
+      lastDay: DateTime(2030, 12, 31),
       calendarFormat: _format,
       currentDay: _currentDay,
       rowHeight: 48,
